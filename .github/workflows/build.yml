@@ -1,20 +1,32 @@
+
 name: Compilar Aventura GBA
 
 on:
   workflow_dispatch:
   push:
-    branches: [principal, main]
+    branches: [main, principal]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: devkitpro/devkitarm:latest
+    container:
+      image: devkitpro/devkitarm:latest
+
+    env:
+      DEVKITPRO: /opt/devkitpro
+      DEVKITARM: /opt/devkitpro/devkitARM
+      PATH: /opt/devkitpro/devkitARM/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
     steps:
       - name: Baixar codigo
         uses: actions/checkout@v4
 
-      - name: Compilar
+      - name: Verificar compilador
+        run: |
+          which arm-none-eabi-gcc
+          arm-none-eabi-gcc --version
+
+      - name: Compilar jogo
         run: make
 
       - name: Guardar arquivo GBA
@@ -23,3 +35,4 @@ jobs:
           name: aventura-gba
           path: aventura.gba
           if-no-files-found: error
+
